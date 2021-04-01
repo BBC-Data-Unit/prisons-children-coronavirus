@@ -25,6 +25,11 @@ The BBC has found that, while more than half of prisons resumed visits by the en
 * Histogram: Coronavirus daily cases, Feb 2020-Mar 2021
 * Infographic: Lockdown rules for England from 29 March
 
+## Code
+
+* Scraper ([Python notebook](https://github.com/BBC-Data-Unit/prisons-children-coronavirus/blob/main/prisonscraper.ipynb)) of changelogs on gov.uk webpages for each prison
+* [R notebook](https://github.com/BBC-Data-Unit/prisons-children-coronavirus/blob/main/waybackapi.Rmd): Using the Wayback Machine API to find snapshots of prison pages
+
 
 ## Related repos
 
