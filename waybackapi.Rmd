@@ -1,0 +1,318 @@
+---
+title: "Using the Wayback Machine API to find snapshots of prison pages"
+output: html_notebook
+---
+
+# Using the Wayback Machine API to find snapshots of prison pages
+
+The Wayback Machine [has a number of APIs](https://archive.org/help/wayback_api.php) including one that returns the URL of the snapshot of a given URL which is closest to a given timestamp.
+
+We have a list of prison URLs and timestamps for when each was changed, scraped using a Python notebook. We now want to establish if we can locate snapshots for each of those changes (i.e. between changes).
+
+We will need to:
+
+* Loop through each prison URL 
+* For each of those loop through the change timestamps
+* For each of those, query the Wayback API for the nearest snapshot
+* Store the resulting URL
+
+We might then also want to scrape those snapshots and/or identify differences between them (the changes)
+
+## Testing one URL
+
+Start by storing a URL and two timestamps from the scraped data:
+
+```{r store url and timestamp}
+testurl <- "https://www.gov.uk/guidance/cardiff-prison"
+testdates <- c("2020-03-11T09:32:00.000+00:00","2020-03-25T16:09:19.000+00:00")
+```
+
+A Wayback API query looks like this: `https://archive.org/wayback/available?url=example.com&timestamp=20060101`
+
+Using it with the timestamp gives us a URL like this: `https://archive.org/wayback/available?url=https://www.gov.uk/guidance/cardiff-prison&timestamp=2020-03-11T09:32:00.000+00:00`
+
+But that doesn't return any useful data. 
+
+Instead we have to translate the timestamp into one that is understood by the API. For example:
+
+`https://archive.org/wayback/available?url=https://www.gov.uk/guidance/cardiff-prison&timestamp=20200311`
+
+That works, returning the URL:
+
+`https://web.archive.org/web/20200425142044/https://www.gov.uk/guidance/cardiff-prison`
+
+The API [documentation](https://archive.org/help/wayback_api.php) specifies:
+
+> "The format of the timestamp is 1-14 digits (YYYYMMDDhhmmss)"
+
+We can use `gsub` to substitute the characters from the timestamp that need to be stripped out: the dashes, "T" and colons:
+
+```{r cleaning timestamp gsub}
+gsub("[-T:]","","2020-03-11T09:32:00.000+00:00")
+```
+
+We also need to remove the last part to limit it to 14 characters:
+
+```{r substr timestamp to first 14 chars}
+substr(gsub("[-T:]","","2020-03-11T09:32:00.000+00:00"),1,14)
+```
+
+Now let's apply those functions as part of a loop that inserts the cleaned timestamp into an API query URL:
+
+```{r create test query URLs}
+for(i in testdates){
+  testapiquery <- paste("https://archive.org/wayback/available?url=",testurl,"&timestamp=",substr(gsub("[-T:]","",i),1,14), sep="")
+  print(testapiquery)
+          }
+
+```
+
+## Extracting JSON from the URL
+
+To deal with the JSON provided by the API we need the `jsonlite` package:
+
+```{r activate jsonlite}
+library(jsonlite)
+```
+
+Now to fetch that JSON
+
+```{r fetch json}
+#fetch the JSON from the API query
+testjson <- jsonlite::fromJSON("https://archive.org/wayback/available?url=https://www.gov.uk/guidance/cardiff-prison&timestamp=20200311093200")
+#drill down into the closest url
+testjson$archived_snapshots$closest$url
+#And timestamp (although this is in the URL anyway)
+testjson$archived_snapshots$closest$timestamp
+```
+
+We can see that the closest result is actually *after* the other timestamp: 20200325160919, so it isn't a snapshot of what it looked like between those. 
+
+This can be teased out in analysis later. The key thing is that the process works and we can begin to roll it out for all the URLs and timestamps we have.
+
+## Import URLs and timestamps - and query API in bulk
+
+The data on URLs and timestamps is in a CSV, which we import below:
+
+```{r import prisons data}
+prisonsdata <- read.csv("SCRAPEprisonupdatesJan6.csv", stringsAsFactors = F)
+```
+
+We don't need to create a nested loop (URL, then timestamps within each) because the URLs are repeated for each timestamp, so we just need to loop through a sequence of numbers (the index positions for each row) and access the URL and timestamp in that row
+
+```{r loop through data and use to query API}
+#create empty vector to store results
+queryresults <- c()
+
+#Loop through a vector of numbers from 1 to the number of rows in the dataframe
+for (i in seq(1,nrow(prisonsdata))){
+  print(i)
+  #store the URL at that position
+  currenturl <- prisonsdata$url[i]
+  print(currenturl)
+  #store the timestamp at that position
+  currenttimestamp <- prisonsdata$timestamp[i]
+  print(currenttimestamp)
+  #form a query url from those, converting the timestamp to the right format
+  queryurl <- paste("https://archive.org/wayback/available?url=",currenturl,"&timestamp=",substr(gsub("[-T:]","",currenttimestamp),1,14), sep="")
+  print(queryurl)
+  #fetch the JSON from the URL (API query)
+  queryjson <- jsonlite::fromJSON(queryurl)
+  #drill down into the closest url
+  queryresult <- queryjson$archived_snapshots$closest$url
+  #add to the vector of results
+  queryresults <- c(queryresults,queryresult)
+}
+
+```
+
+At this point (after 50 responses) we hit a 429 error, which means we've [sent too many requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429). We need to find a way to slow those requests.
+
+## Query a different API
+
+Some searching around suggests that the more powerful [Wayback CDX Server API](https://github.com/internetarchive/wayback/tree/master/wayback-cdx-server) may be better for this.
+
+It includes [filtering](https://github.com/internetarchive/wayback/tree/master/wayback-cdx-server#filtering) to specify results *between* dates, too. 
+
+A URL for that looks like this: `https://web.archive.org/cdx/search/cdx?url=archive.org&from=2010&to=2011`
+
+For our data it might look like this:
+
+`https://web.archive.org/cdx/search/cdx?url=https://www.gov.uk/guidance/cardiff-prison&from=20200311093200&to=20200325160919`
+
+Output is text by default (the above query returns an empty page because there are no results within that date range) but can be requested as JSON by adding `&output=json`:
+
+`https://web.archive.org/cdx/search/cdx?url=https://www.gov.uk/guidance/cardiff-prison&from=20200311093200&to=20200325160919&output=json`
+
+When the date range is extended (so that we have some results to see) the result comes in the form of a list with the nearest result first: `https://web.archive.org/cdx/search/cdx?url=https://www.gov.uk/guidance/cardiff-prison&from=20200311093200&to=20210325160919&output=json`
+
+```{r explore cdx api response}
+cdxtextjson <- jsonlite::fromJSON("https://web.archive.org/cdx/search/cdx?url=https://www.gov.uk/guidance/cardiff-prison&from=20200311093200&to=20210325160919&output=json")
+
+#The results are like a matrix with the first row containing the field names...
+cdxtextjson[1,]
+#...and the other rows containing the data
+cdxtextjson[2,]
+cdxtextjson[2,2]
+```
+
+We can try to adapt our loop for the new API and the date range:
+
+```{r query CDX API}
+#create empty vector to store results
+cdxqueryresults <- c()
+
+#Loop through a vector of numbers from 1 to the number of rows in the dataframe
+for (i in seq(1,nrow(prisonsdata))){
+  print(i)
+  #store the URL at that position
+  currenturl <- prisonsdata$url[i]
+  print(currenturl)
+  #store the timestamp at that position
+  currenttimestamp <- prisonsdata$timestamp[i]
+  print(currenttimestamp)
+  #form a query url from those, converting the timestamp to the right format
+  queryurl <- paste("https://web.archive.org/cdx/search/cdx?url=",currenturl,"&from=",substr(gsub("[-T:]","",currenttimestamp),1,14),"&output=json", sep="")
+  print(queryurl)
+  #fetch the JSON from the URL (API query)
+  queryjson <- jsonlite::fromJSON(queryurl)
+  #drill down into the closest url
+  queryresult <- queryjson[2,2]
+  #add to the vector of results
+  cdxqueryresults <- c(cdxqueryresults,queryresult)
+}
+
+```
+
+This causes an error when we get no results. But also: why generate 1139 queries for each url-date combination when we can just fetch all the results for each URL through just 120 queries?
+
+```{r number of prison urls}
+#Show how many unique urls there are in the url field
+length(table(prisonsdata$url))
+```
+
+In that case the JSON response for each query might be converted to a data frame and bound together:
+
+```{r as df}
+#convert to data frame
+cdxtextdf <- as.data.frame(cdxtextjson)
+#extract first row as fields
+colnames(cdxtextdf)<- cdxtextjson[1,]
+#remove first row
+cdxtextdf <- cdxtextdf[-1,]
+cdxtextdf
+```
+
+Time to loop through those URLs and fetch all the snapshots:
+
+
+```{r try with all}
+#create empty data frame to store results
+cdxtextdf <- cdxtextdf[0,]
+
+#Loop through all the unique urls
+for (i in as.data.frame(table(prisonsdata$url))[,1]){
+  #print url
+  print(i)
+  #form a query url from it, with the timestamp 20200301
+  queryurl <- paste("https://web.archive.org/cdx/search/cdx?url=",i,"&from=20200301&output=json", sep="")
+  print(queryurl)
+  #fetch the JSON from the URL (API query)
+  queryjson <- jsonlite::fromJSON(queryurl)
+  #convert to data frame
+  querydf <- as.data.frame(queryjson)
+  #extract first row as fields
+  colnames(querydf)<- queryjson[1,]
+  #remove first row
+  querydf <- querydf[-1,]
+  #add to the data frame of results
+  cdxtextdf <- rbind(cdxtextdf,querydf)
+}
+```
+
+That seems to work:
+
+```{r show head}
+head(cdxtextdf)
+```
+
+We can add a full URL by combining the base URL like so: https://web.archive.org/web/20201203081036/https://www.gov.uk/guidance/channings-wood-prison
+
+```{r create snapshot urls}
+cdxtextdf$snapshoturl <- paste0("https://web.archive.org/web/",cdxtextdf$timestamp,"/",cdxtextdf$original)
+```
+
+And check how that looks:
+
+```{r show head with new col}
+head(cdxtextdf)
+```
+
+And export:
+
+```{r export csv}
+write.csv(cdxtextdf, "waybackurls.csv")
+```
+
+
+## Is there a snapshot between dates?
+
+The next step is to match this data with the data on changes to the pages in question.
+
+In Excel we've filtered the prison webpage scrape to those changes since March 2020 and generate some new columns which generate a 'from' and 'to' timestamp for the API (if it's the latest update, the 'to' timestamp is today)
+
+```{r import prison data}
+prisonsdata <- rio::import("waybackurlsANALYSIS.xlsx", sheet = 1)
+colnames(prisonsdata)
+```
+
+```{r query CDX API with from and to}
+#create empty vector to store results
+cdxqueryresults <- c()
+
+#Loop through a vector of numbers from 1 to the number of rows in the dataframe
+for (i in seq(1,nrow(prisonsdata))){
+  print(i)
+  #store the URL at that position
+  currenturl <- prisonsdata$url[i]
+  print(currenturl)
+  #store the timestamp at that position
+  fromtimestamp <- prisonsdata$fromtimestampforapi[i]
+  totimestamp <- prisonsdata$totimestamp[i]
+  print(currenttimestamp)
+  #form a query url from those, converting the timestamp to the right format
+  queryurl <- paste("https://web.archive.org/cdx/search/cdx?url=",currenturl,"&from=",fromtimestamp,"&to=",totimestamp,"&output=json", sep="")
+  print(queryurl)
+  #fetch the JSON from the URL (API query)
+  queryjson <- jsonlite::fromJSON(queryurl)
+  #drill down into the closest url
+  print(length(queryresult))
+  if(length(queryresult)>1){
+    queryresult <- queryjson[2,2]
+    #add to the vector of results
+    cdxqueryresults <- c(cdxqueryresults,queryresult)
+  }
+  else{
+    cdxqueryresults <- c(cdxqueryresults,"no snapshot")
+  }
+}
+
+```
+
+Now to add that to the original data frame:
+
+```{r check number of rows}
+table(cdxqueryresults)
+```
+
+```{r add results to df}
+prisonsdata$waybackurl <- cdxqueryresults
+```
+
+And export.
+
+```{r export}
+write.csv(prisonsdata,"prisonsdata.csv")
+```
+
+
