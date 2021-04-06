@@ -1,10 +1,14 @@
 # Coronavirus: Prisoners' children 'forgotten' during pandemic
 
+![](https://ichef.bbci.co.uk/news/976/cpsprodpb/03B8/production/_117625900_hi055203679.jpg)
+
 In March 2021, the BBC Shared Data Unit [reported](https://www.bbc.co.uk/news/uk-56420186) on the problems faced by 300,000 children of UK prisoners and concerns that they had been "forgotten" during the pandemic. 
 
 These included delays to a "military grade security" video call system which was not fully rolled out until nine months after the start of the pandemic and had suffered a range of problems, and variations in when prisons allowed in-person visits after national and localised lockdown restrictions.
 
 The BBC has found that, while more than half of prisons resumed visits by the end of July, some 5,000 inmates had to wait until September or later.
+
+The Ministry of Justice said: "There is no question our response has saved lives and helped protect the NHS, with infections and deaths in prisons significantly lower than predicted at the start of the pandemic." It said it was also working to improve the video calls system.
 
 ## Get the data
 
