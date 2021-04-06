@@ -39,13 +39,16 @@ The Ministry of Justice said: "There is no question our response has saved lives
 ## Partner usage
 
 The Shared Data Unit makes data journalism available to the wider news industry as part of the BBC Local News Partnership.
+
+The story was used on BBC local radio stations in Kent, Shorpshire, Teeside, Leicester, Bradford and Berkshire. It also featured as television packages on BBC Look North, BBC South West and ITV Central.
+
 Stories written by partners based on this research included:
 
 * Your Thurrock: [Prisoners allowed visits for just 100 days in 2020](https://www.yourthurrock.com/2021/03/31/prisoners-allowed-visits-for-just-100-days-in-2020/) *31 March 2021*
-* Sunderland Echo: [North East prisoners had no visits for most of last year after pandemic rules](https://www.sunderlandecho.com/health/coronavirus/north-east-prisoners-had-no-visits-for-most-of-last-year-after-pandemic-rules-3182758)*30 March 2021
-* Yorkshire Evening Post: [Covid prison lockdowns: Family visits ban at HMP Leeds and other jails leaves children 'hardest hit'](https://www.yorkshireeveningpost.co.uk/news/crime/covid-prison-lockdowns-family-visits-ban-at-hmp-leeds-and-other-jails-leaves-children-hardest-hit-3182126) *30 March 2021
-* Saffron Waldon Reporter: [Prison visits were limited to 100 days in 2020](https://www.saffronwaldenreporter.co.uk/news/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021
-* Dunmow Broadcast: [Prison visits were limited ti 100 days in 2020](https://www.dunmowbroadcast.co.uk/news/crime/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021
+* Sunderland Echo: [North East prisoners had no visits for most of last year after pandemic rules](https://www.sunderlandecho.com/health/coronavirus/north-east-prisoners-had-no-visits-for-most-of-last-year-after-pandemic-rules-3182758) *30 March 2021*
+* Yorkshire Evening Post: [Covid prison lockdowns: Family visits ban at HMP Leeds and other jails leaves children 'hardest hit'](https://www.yorkshireeveningpost.co.uk/news/crime/covid-prison-lockdowns-family-visits-ban-at-hmp-leeds-and-other-jails-leaves-children-hardest-hit-3182126) *30 March 2021*
+* Saffron Waldon Reporter: [Prison visits were limited to 100 days in 2020](https://www.saffronwaldenreporter.co.uk/news/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021*
+* Dunmow Broadcast: [Prison visits were limited ti 100 days in 2020](https://www.dunmowbroadcast.co.uk/news/crime/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021*
 
 ## Related repos
 
