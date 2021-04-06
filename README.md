@@ -1,6 +1,8 @@
 # Coronavirus: Prisoners' children 'forgotten' during pandemic
 
-In March 2021, the BBC Shared Data Unit [reported](https://www.bbc.co.uk/news/uk-56420186) on the problems faced by 300,000 children of UK prisoners and concerns that they had been "forgotten" during the pandemic. These included delays to a "military grade security" video call system which was not fully rolled out until nine months after the start of the pandemic and has suffered a range of problems, and variations in prison decisions regarding relaxing lockdown measures when the country as a whole came out of lockdown.
+In March 2021, the BBC Shared Data Unit [reported](https://www.bbc.co.uk/news/uk-56420186) on the problems faced by 300,000 children of UK prisoners and concerns that they had been "forgotten" during the pandemic. 
+
+These included delays to a "military grade security" video call system which was not fully rolled out until nine months after the start of the pandemic and had suffered a range of problems, and variations in when prisons allowed in-person visits after national and localised lockdown restrictions.
 
 The BBC has found that, while more than half of prisons resumed visits by the end of July, some 5,000 inmates had to wait until September or later.
 
@@ -30,6 +32,12 @@ The BBC has found that, while more than half of prisons resumed visits by the en
 * Scraper ([Python notebook](https://github.com/BBC-Data-Unit/prisons-children-coronavirus/blob/main/prisonscraper.ipynb)) of changelogs on gov.uk webpages for each prison
 * [R notebook](https://github.com/BBC-Data-Unit/prisons-children-coronavirus/blob/main/waybackapi.Rmd): Using the Wayback Machine API to find snapshots of prison pages
 
+## Partner usage
+
+The Shared Data Unit makes data journalism available to the wider news industry as part of the BBC Local News Partnership.
+Stories written by partners based on this research included:
+
+* Your Thurrock: [Prisoners allowed visits for just 100 days in 2020](https://www.yourthurrock.com/2021/03/31/prisoners-allowed-visits-for-just-100-days-in-2020/) *31 March 2021*
 
 ## Related repos
 
