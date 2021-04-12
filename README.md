@@ -49,7 +49,7 @@ Stories written by partners based on this research included:
 * Yorkshire Evening Post: [Covid prison lockdowns: Family visits ban at HMP Leeds and other jails leaves children 'hardest hit'](https://www.yorkshireeveningpost.co.uk/news/crime/covid-prison-lockdowns-family-visits-ban-at-hmp-leeds-and-other-jails-leaves-children-hardest-hit-3182126) *30 March 2021*
 * Saffron Waldon Reporter: [Prison visits were limited to 100 days in 2020](https://www.saffronwaldenreporter.co.uk/news/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021*
 * Dunmow Broadcast: [Prison visits were limited ti 100 days in 2020](https://www.dunmowbroadcast.co.uk/news/crime/essex-prison-vists-were-limited-to-100-days-7868060) *5 April 2021*
-* Belfast Live: [Families and children 'hardest hit' as prison visits in Northern Ireland were limited to 93 days in 2020] *9 April 2021*
+* Belfast Live: [Families and children 'hardest hit' as prison visits in Northern Ireland were limited to 93 days in 2020](https://www.belfastlive.co.uk/news/belfast-news/families-children-hardest-hit-prison-20352860) *9 April 2021*
 
 ## Related repos
 
